@@ -115,30 +115,26 @@ void icmp_init(){
 
 void icmp_update(){
     for(int i = 0; i < ICMP_MAX_ENTRY; i++){
-        if(icmp_table[i].state == ICMP_TIMEOUT && getCurrentTime() > icmp_table[i].send_time + ICMP_TIMEOUT_MS){
-            icmp_table[i].state = ICMP_INVALID;
+        if(icmp_table[i].state == ICMP_WAITING && getCurrentTime() > icmp_table[i].send_time + ICMP_TIMEOUT_MS){
+            printf("请求超时。\n");
+            icmp_table[i].state = ICMP_TIMEOUT;
         }
     }
 }
 
 void ping(uint8_t *dst_ip){
     int cnt = 4;
-    time_t past = time(0);
+    time_t past;
     printf("正在 Ping %s 具有 32 字节的数据:\n", iptos(dst_ip));
-    icmp_request(dst_ip);
-    cnt--;
+    
     while(cnt > 0){
+        icmp_request(dst_ip);
+        past = time(0);
+        cnt--;
         while(time(0) - past < ICMP_INTERVEL){
             net_poll();
             icmp_update();
         }
-        icmp_request(dst_ip);
-        past = time(0);
-        cnt--;
-    }
-    while(time(0) - past < 1.5 * ICMP_INTERVEL){
-        net_poll();
-        icmp_update();
     }
     int max=0, min=1000, total = 0, recv = 0;
     for(int i = 0; i < ICMP_MAX_ENTRY; i++){
@@ -159,6 +155,9 @@ void ping(uint8_t *dst_ip){
     int loss = 4 - recv;
     int loss_rate = (loss / 4.0) * 100;
     int aver = total / 4;
+    if(recv == 0){
+        min = 0;
+    }
     printf("\n%s 的 Ping 统计信息:\n", iptos(dst_ip));
     printf("    数据包: 已发送 = 4，已接收 = %d，丢失 = %d (%d%% 丢失)\n", recv, loss, loss_rate);
     printf("往返行程的估计时间(以毫秒为单位):\n");

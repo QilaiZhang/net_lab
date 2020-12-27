@@ -8,11 +8,11 @@
 int main(int argc, char const *argv[])
 {
 
-    uint8_t dst_ip[4] = {192, 168, 56, 1};
-    uint8_t baidu_ip[4] = {183,232,231,172};
+    uint8_t dst_ip[4] = {192, 168, 56, 2};
+
     net_init();               //初始化协议栈
 
-    ping(baidu_ip);
+    ping(dst_ip);
 
     return 0;
 }
