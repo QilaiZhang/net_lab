@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+
 #define IPTOSBUFFERS 12
 
 /**
@@ -90,3 +92,10 @@ uint16_t checksum16(uint16_t *buf, int len)
     sum += sum >> 16;
     return (uint16_t)~sum;
 }
+
+long getCurrentTime()  
+{  
+   struct timeval tv;  
+   gettimeofday(&tv,NULL);  
+   return tv.tv_sec * 1000 + tv.tv_usec / 1000;  
+} 

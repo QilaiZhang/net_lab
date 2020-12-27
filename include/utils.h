@@ -61,4 +61,6 @@ uint16_t checksum16(uint16_t *buf, int len);
  */
 char *iptos(uint8_t *ip);
 
+long getCurrentTime();
+
 #endif
